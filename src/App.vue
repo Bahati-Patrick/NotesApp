@@ -1,25 +1,45 @@
+<script setup>
+  import { ref } from 'vue';
+
+  const showModal = ref(false);
+  const newNote = ref("");
+  const notes = ref([]);
+
+  function getRandomColor() {
+    return "hsl(" + Math.random() * 360 + ",100%,75%)";
+  }
+
+  const addNote = () => {
+    if (newNote.value === "") return;
+    notes.value.push({
+      id: Math.floor(Math.random() * 1000000),
+      text: newNote.value,
+      date: new Date(),
+      backgroundColor: getRandomColor()
+    });
+
+    showModal.value = false;
+    newNote.value = "";
+  }
+</script>
 <template>
   <main>
-    <div class="overlay">
+    <div v-if="showModal" class="overlay">
       <div class="modal">
-        <textarea name="note" id="note" cols="30" rows="10"></textarea>
-        <button>Add Note</button>
-        <button class="close">Close</button>
+        <textarea v-model="newNote" name="note" id="note" cols="30" rows="10"></textarea>
+        <button @click="addNote">Add Note</button>
+        <button class="close" @click="showModal = false">Close</button>
       </div>
     </div>
     <div class="container">
       <header>
         <h1>Notes</h1>
-        <button>+</button>
+        <button @click="showModal = true">+</button>
       </header>
       <div class="cards-container">
-        <div class="card">
-          <p class="main-text">Lorem ipsum dolor sit, amet consectetur adipisicing elit. A illum cumque, rerum quae aliquid dolorem?</p>
-          <p class="date">25/03/2024</p>
-        </div>
-        <div class="card">
-          <p class="main-text">Lorem ipsum dolor sit, amet consectetur adipisicing elit. A illum cumque, rerum quae aliquid dolorem?</p>
-          <p class="date">25/03/2024</p>
+        <div v-for="note in notes" class="card" :style="{backgroundColor: note.backgroundColor}">
+          <p class="main-text">{{ note.text }}</p>
+          <p class="date">{{ note.date.toLocaleDateString() }}</p>
         </div>
       </div>
     </div>
